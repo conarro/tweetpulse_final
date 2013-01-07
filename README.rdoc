@@ -1,0 +1,4 @@
+== Welcome to TweetPulse
+
+TweetPulse is an application that integrates PeopleBrowsr, Twitter, and Sentiment140 to help visualize the activity
+and propagation of tweets matching a given search.

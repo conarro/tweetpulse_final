@@ -1,0 +1,13 @@
+<%- model_class = Term -%>
+<div class="page-header">
+  <h4><%= "Tweets matching #{@term.type.downcase} '#{@term.text}'" %><small class="pull-right" style="padding-top:3px;"><i class='icon-refresh'></i> <%= link_to "Refresh results", refresh_term_results_path(@term.id) %></small></h4>
+</div>
+
+  
+
+<dl class="dl-horizontal">
+  <% @tweets.each do |tweet| %>
+    <dt><strong><%= tweet.from_user %>:</strong></dt>
+    <dd><%= link_to tweet.text, tweet_path(tweet) %></dd>
+  <% end %>
+</dl>

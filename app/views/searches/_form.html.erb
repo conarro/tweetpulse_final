@@ -1,0 +1,54 @@
+<%= simple_form_for(@search, :html => { :class => 'form-horizontal' }) do |f| %>
+  <%= f.error_notification %>
+  <div class="form-inputs">
+    <%= f.simple_fields_for :terms do |term_form|  %>
+      <% #raise term_form.object.inspect %>
+      <% type = term_form.object.type.to_s
+         if type == "KeywordTerm"
+           label = 'Keyword / URL'
+           hint = 'Search tweets that include this keyword or URL (keywords may also be @handles)'
+           append_icon = ""
+         elsif type == "HashtagTerm"
+           label = 'Hashtag'
+           hint = 'Search tweets that include this hashtag'
+           append_icon = "#"
+         else
+           label = 'User'
+           hint = 'Restrict search to tweets from this user'
+           append_icon = "@"
+         end
+       %>
+       <%= term_form.input :text, :size => "80", :label => label, :hint => hint, :input_html => {:style => "width:233px;"}, :wrapper => :prepend do %>
+         <span class="add-on"><%= append_icon %></span>
+         <%= term_form.input_field :text %>
+       <% end %>
+
+      <%= term_form.hidden_field :type %>
+    <% end %>
+    <div class="form-inputs">
+      <%= f.input :count, :required => true, :label => "Results Count", :hint => "Number of PeopleBrowsr results to return for firs-level search", :input_html => { :value => '50' } %>
+    </div>
+    <div class="control-group string required" style="display:none;">
+      <label class="control-label required">Date Range</label>
+      <div class="controls">
+        <% from = Date.today %>
+        <% to = from - 7 %>
+        <%= f.datepicker :from_date, :size => "12", :value => from.to_s %>
+        <%= f.datepicker :to_date, :value => to.to_s %>
+        <p class="help-block">Search within this date range</p>
+      </div>
+    </div>
+  </div>
+  <div class="form-actions">
+    <%= f.button :submit, :class => 'btn-primary' %>
+    <%= submit_tag 'Cancel', :type => :reset, :class => "btn btn-danger" %>
+  </div>
+<% end %>
+
+<script>
+$(document).ready(function() {
+  $('.datepicker').datepicker();
+  $('#search_from_date').val()
+})
+
+</script>

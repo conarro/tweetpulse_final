@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= content_for?(:title) ? yield(:title) : "TweetPulse" %></title>
+    <%= csrf_meta_tags %>
+
+    <%= stylesheet_link_tag "application", :media => "all" %>
+    <link href='http://fonts.googleapis.com/css?family=Lobster|Faster+One' rel='stylesheet' type='text/css'>
+    <style>
+    .brand {
+      font-family: 'Lobster', cursive;
+    }
+    footer {
+      position:absolute;
+    }
+    </style>
+    <%= javascript_include_tag "application" %>
+    <!-- For third-generation iPad with high-resolution Retina display: -->
+    <!-- Size should be 144 x 144 pixels -->
+    <%= favicon_link_tag 'images/apple-touch-icon-144x144-precomposed.png', :rel => 'apple-touch-icon-precomposed', :type => 'image/png', :sizes => '144x144' %>
+
+    <!-- For iPhone with high-resolution Retina display: -->
+    <!-- Size should be 114 x 114 pixels -->
+    <%= favicon_link_tag 'images/apple-touch-icon-114x114-precomposed.png', :rel => 'apple-touch-icon-precomposed', :type => 'image/png', :sizes => '114x114' %>
+
+    <!-- For first- and second-generation iPad: -->
+    <!-- Size should be 72 x 72 pixels -->
+    <%= favicon_link_tag 'images/apple-touch-icon-72x72-precomposed.png', :rel => 'apple-touch-icon-precomposed', :type => 'image/png', :sizes => '72x72' %>
+
+    <!-- For non-Retina iPhone, iPod Touch, and Android 2.1+ devices: -->
+    <!-- Size should be 57 x 57 pixels -->
+    <%= favicon_link_tag 'images/apple-touch-icon-precomposed.png', :rel => 'apple-touch-icon-precomposed', :type => 'image/png' %>
+
+    <!-- For all other devices -->
+    <!-- Size should be 32 x 32 pixels -->
+    <%= favicon_link_tag 'tweetpulse.ico', :rel => 'shortcut icon' %>
+  </head>
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <%= link_to "TweetPulse", dashboard_path, :class => "brand" if user_signed_in? %>
+          <%= link_to "TweetPulse", "/users/sign_in", :class => "brand" unless user_signed_in? %>
+          <div class="container nav-collapse">
+            <% if user_signed_in? %>
+              <ul class="nav pull-right">
+                <li class="divider-vertical"></li>
+                <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                  <span style="padding-right:5px;"><%= current_user.name %></span>
+                  <%= raw("<i class='icon-user icon-white'></i>") unless current_user.twitter_auth %> 
+                  <%= image_tag current_user.twitter_auth.profile_image_url, :height => "25", :width => '25' if current_user.twitter_auth %>
+                  <span class="caret"></span></a>
+                    <ul class="dropdown-menu" style="min-width:200px;">
+                      <li style="margin-left:10px;"><%= current_user.email %></li>
+                      <li class="divider"></li>
+                      <li><%= link_to raw("<i class='icon-pencil'></i> Manage Searches"), searches_path %></li>
+                      <li><%= link_to raw("<i class='icon-cog'></i>  Edit Settings"), edit_user_registration_path %></li>
+                      <li><%= link_to raw("<i class='icon-share-alt'></i> Sign Out"), destroy_user_session_path, :method => 'delete' %></li>
+                    </ul>
+                </li>
+                <li class="divider-vertical"></li>
+              </ul>
+              <ul class="nav">
+                <li><%= link_to raw("<i class='icon-bar-chart icon-large icon-white'></i>&nbsp;&nbsp;Dashboard"), "/dashboard"  %></li>
+                <li><%= link_to raw("<i class='icon-plus-sign icon-large icon-white'></i>&nbsp;&nbsp;Add Search"), new_search_path  %></li>
+              </ul>
+            <% end %>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+          <% if user_signed_in? %>
+            <div class="span3">
+              <div class="sidebar-nav" style="min-height:200px;margin-top:22px;">
+                <ul class="well nav nav-list">
+                  <li class="nav-header">Your Searches</li>
+                  <% unless current_user.searches.count == 0 %>
+                      <% current_user.searches.each do |search| %>
+                        <li class='search-item'><%= link_to truncate(search.label, :length => 30), search_path(search) %></li>
+                      <% end %>
+                  <% else %>
+                    <li><small><%= "You aren't tracking anything" if current_user.searches.blank? %></small></li>
+                  <% end %>
+                 
+                </ul><!--/.well -->
+              </div><!--/.sidebar -->
+            </div><!--/span-->
+            <div class="span9" style="min-height:600px;">
+               <div id="loading-overlay" style="display:none; width:230px;position:fixed; left:50%; top:200px; background:#fcf8e3; border:2px solid #666; border-radius:3px; padding:20px;">
+                  <%= image_tag 'loading.gif', :id => "loading", :class => "pull-left", :style => "margin:3px 10px 0 0;"%>
+                  <span style="margin-top:5px;">Loading results...</span>
+                </div>
+               <%= bootstrap_flash %>
+               <%= yield %>
+            </div>
+          <% else %>
+             <%= bootstrap_flash %>
+             <%= yield %>
+          <% end %>
+        </div><!--/row-->
+
+      <footer>
+        <p>Developed at Carnegie Mellon University</p>
+      </footer>
+
+    </div> <!-- /container -->
+
+  </body>
+</html>
+
+<script type="text/javascript" language="javascript" >
+    $(document).ready(function () {
+      $('.alert').delay(2000).slideUp();
+    }); 
+ </script>
